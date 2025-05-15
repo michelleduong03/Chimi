@@ -41,6 +41,18 @@ app.post('/orders/move', (req, res) => {
   }
 });
 
+// Delete an order
+app.post('/orders/delete', (req, res) => {
+  const { from, id } = req.body;
+  const index = orders[from].findIndex(o => o.id === id);
+  if (index !== -1) {
+    orders[from].splice(index, 1);
+    res.send('Order deleted');
+  } else {
+    res.status(404).send('Order not found');
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
