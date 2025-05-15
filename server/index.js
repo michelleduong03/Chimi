@@ -1,9 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const PORT = 5000;
+const PORT = 5001;
 
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3000',
+}));
 app.use(express.json());
 
 let orders = {
@@ -20,6 +23,7 @@ app.get('/orders', (req, res) => {
 // Add order to "making"
 app.post('/orders', (req, res) => {
   const { nameOrNumber } = req.body;
+  console.log('Received order:', nameOrNumber);
   orders.making.push({ id: Date.now(), nameOrNumber });
   res.status(201).send('Order added');
 });
