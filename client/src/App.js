@@ -44,6 +44,16 @@ function App() {
     }
   };  
 
+  const deleteOrder = async (from, id) => {
+    try {
+      await axios.post('http://localhost:5001/orders/delete', { from, id });
+      fetchOrders();
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      alert('Failed to delete order. Please try again.');
+    }
+  };
+
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -71,14 +81,21 @@ function App() {
                 {order.nameOrNumber}
                 <div>
                   {/* show buttons only if owner */}
-                  {isOwner && BUCKETS.filter(b => b !== bucket).map(target => (
-                    <button
-                      key={target}
-                      onClick={() => moveOrder(bucket, target, order.id, order.nameOrNumber)}
-                    >
-                      {`→ ${target}`}
-                    </button>
-                  ))}
+                  {isOwner && (
+                    <>
+                      {BUCKETS.filter(b => b !== bucket).map(target => (
+                        <button
+                          key={target}
+                          onClick={() => moveOrder(bucket, target, order.id, order.nameOrNumber)}
+                        >
+                          {`→ ${target}`}
+                        </button>
+                      ))}
+                      <button onClick={() => deleteOrder(bucket, order.id)} style={{ color: 'red' }}>
+                        Delete
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             ))}
