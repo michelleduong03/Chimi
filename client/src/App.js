@@ -7,6 +7,8 @@ function App() {
   const [orders, setOrders] = useState({ making: [], pickup: [], complete: [] });
   const [input, setInput] = useState("");
 
+  const [isOwner, setIsOwner] = useState(true);
+
   const fetchOrders = async () => {
     try {
       const res = await axios.get('http://localhost:5001/orders');
@@ -49,6 +51,14 @@ function App() {
   return (
     <div style={{ padding: '20px' }}>
       <h1>☕ Chimi Order System</h1>
+      
+      {/* toggle for customer/owner */}
+      <button onClick={() => setIsOwner(!isOwner)} style={{ marginBottom: '10px' }}>
+        Switch to {isOwner ? 'Customer' : 'Owner'} View
+      </button>
+
+      <br></br>
+      
       <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Name or number" />
       <button onClick={addOrder}>Add Order</button>
 
@@ -60,8 +70,14 @@ function App() {
               <div key={order.id} style={{ border: '1px solid gray', padding: '5px', margin: '5px' }}>
                 {order.nameOrNumber}
                 <div>
-                  {BUCKETS.filter(b => b !== bucket).map(target => (
-                    <button key={target} onClick={() => moveOrder(bucket, target, order.id, order.nameOrNumber)}>{`→ ${target}`}</button>
+                  {/* show buttons only if owner */}
+                  {isOwner && BUCKETS.filter(b => b !== bucket).map(target => (
+                    <button
+                      key={target}
+                      onClick={() => moveOrder(bucket, target, order.id, order.nameOrNumber)}
+                    >
+                      {`→ ${target}`}
+                    </button>
                   ))}
                 </div>
               </div>
