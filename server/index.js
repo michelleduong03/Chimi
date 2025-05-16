@@ -53,6 +53,16 @@ app.post('/orders/delete', (req, res) => {
   }
 });
 
+// Get metrics
+app.get('/metrics', (req, res) => {
+  res.json({
+    totalOrders: orders.making.length + orders.pickup.length + orders.complete.length,
+    making: orders.making.length,
+    pickup: orders.pickup.length,
+    complete: orders.complete.length
+  });
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
