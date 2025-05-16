@@ -1,38 +1,175 @@
-.App {
-  text-align: center;
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f9f9f9;
+  margin: 0;
+  padding: 0;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.app {
+  max-width: 1100px;
+  margin: auto;
+  padding: 40px 20px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
 }
 
-.App-header {
-  background-color: #282c34;
+.view-toggle {
+  padding: 8px 14px;
+  background: #eef2ff;
+  color: #4f46e5;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.view-toggle:hover {
+  background: #e0e7ff;
+}
+
+.add-order {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.add-order input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  flex-grow: 1;
+}
+
+.add-order button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #4f46e5;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s ease;
+}
+
+.add-order button:hover {
+  background-color: #4338ca;
+}
+
+.metrics {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+
+.bucket-container {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.bucket {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  flex: 1;
+}
+
+.order-card {
+  background-color: #f1f5f9;
+  padding: 10px 12px;
+  border-radius: 12px;
+  margin: 8px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-actions button {
+  margin-left: 6px;
+  background: #e0e7ff;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.order-actions .delete {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.order-actions .delete:hover {
+  background: #fecaca;
+}
+
+.app.owner-view {
+  display: flex;
   min-height: 100vh;
+}
+
+.vertical-nav {
+  width: 220px;
+  background-color: #1e293b;
+  color: white;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  padding: 20px;
+  position: fixed; 
+  top: 0;
+  left: 0;
+  bottom: 0;
+}
+
+.vertical-nav h2 {
+  margin-bottom: 40px;
+}
+
+.nav-button {
+  background: transparent;
+  border: none;
   color: white;
+  padding: 12px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  transition: background-color 0.3s;
 }
 
-.App-link {
-  color: #61dafb;
+.nav-button:hover {
+  background-color: #3b82f6;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.nav-button.active {
+  background-color: #3b82f6;
 }
+
+.main-content {
+  margin-left: 220px; 
+  padding: 40px;
+  flex-grow: 1;
+  background: #f9fafb;
+  min-height: 100vh;
+}
+
+/* .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  padding: 0 20px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
+} */
+
