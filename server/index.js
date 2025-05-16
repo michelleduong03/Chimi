@@ -59,8 +59,37 @@ app.get('/metrics', (req, res) => {
     totalOrders: orders.making.length + orders.pickup.length + orders.complete.length,
     making: orders.making.length,
     pickup: orders.pickup.length,
-    complete: orders.complete.length
+    complete: orders.complete.length,
   });
+});
+
+let metricsLog = [];
+
+app.get('/logs', (req, res) => {
+  res.json(metricsLog);
+});
+
+app.post('/close-day', (req, res) => {
+  try {
+    const date = new Date();
+    const metrics = {
+      date,
+      totalOrders: orders.making.length + orders.pickup.length + orders.complete.length,
+      making: orders.making.length,
+      pickup: orders.pickup.length,
+      complete: orders.complete.length,
+    };
+
+    // Save metrics to log
+    metricsLog.push(metrics);
+
+    // Reset orders
+    orders = { making: [], pickup: [], complete: [] };
+
+    res.json({ message: 'Day closed and metrics logged.', metrics });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to close day.' });
+  }
 });
 
 // Start server
