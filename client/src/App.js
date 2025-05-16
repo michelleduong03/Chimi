@@ -6,7 +6,7 @@ const BUCKETS = ['making', 'pickup', 'complete'];
 function App() {
   const [orders, setOrders] = useState({ making: [], pickup: [], complete: [] });
   const [input, setInput] = useState("");
-
+  const [metrics, setMetrics] = useState({});
   const [isOwner, setIsOwner] = useState(true);
 
   const fetchOrders = async () => {
@@ -54,9 +54,21 @@ function App() {
     }
   };
 
+  const fetchMetrics = async () => {
+    try {
+      const res = await axios.get('http://localhost:5001/metrics');
+      setMetrics(res.data);
+    } catch (err) {
+      console.error('Failed to fetch metrics:', err);
+    }
+  };
+
   useEffect(() => {
     fetchOrders();
-  }, []);
+    if (isOwner) {
+      fetchMetrics();
+    }
+  }, [isOwner]);  
 
   return (
     <div style={{ padding: '20px' }}>
@@ -71,6 +83,16 @@ function App() {
       
       <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Name or number" />
       <button onClick={addOrder}>Add Order</button>
+
+      {isOwner && (
+        <div style={{ marginTop: '10px' }}>
+          <h3>📈 Metrics</h3>
+          <p>Total Orders: {metrics.totalOrders}</p>
+          <p>Making: {metrics.making}</p>
+          <p>Pickup: {metrics.pickup}</p>
+          <p>Complete: {metrics.complete}</p>
+        </div>
+      )}
 
       <div style={{ display: 'flex', gap: '20px', marginTop: '20px' }}>
         {BUCKETS.map(bucket => (
