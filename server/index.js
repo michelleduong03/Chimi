@@ -28,17 +28,51 @@ app.post('/orders', (req, res) => {
   res.status(201).send('Order added');
 });
 
+let completedOrders = []; 
+
 // Move order between buckets
 app.post('/orders/move', (req, res) => {
   const { from, to, id } = req.body;
   const orderIndex = orders[from].findIndex(o => o.id === id);
+
   if (orderIndex !== -1) {
     const [order] = orders[from].splice(orderIndex, 1);
     orders[to].push(order);
+
+    // move to complete, save to completedOrders
+    if (to === 'complete') {
+      order.completedAt = new Date();
+      completedOrders.push(order);
+    }
+
     res.send('Order moved');
   } else {
     res.status(404).send('Order not found');
   }
+});
+
+// View completed orders
+app.get('/orders/history', (req, res) => {
+  const { start, end, query } = req.query;
+
+  let filtered = completedOrders;
+
+  if (start && end) {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    filtered = filtered.filter(order => {
+      const completedAt = new Date(order.completedAt);
+      return completedAt >= startDate && completedAt <= endDate;
+    });
+  }
+
+  if (query) {
+    filtered = filtered.filter(order =>
+      order.nameOrNumber?.toLowerCase().includes(query.toLowerCase())
+    );
+  }
+
+  res.json(filtered);
 });
 
 // Delete an order
