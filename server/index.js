@@ -1,7 +1,13 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
 const PORT = 5001;
+const axios = require('axios');
+
+const SQUARE_ACCESS_TOKEN = process.env.SQUARE_ACCESS_TOKEN;
+const SQUARE_LOCATION_ID = process.env.SQUARE_LOCATION_ID;  
+
 
 // app.use(cors());
 app.use(cors({
@@ -73,6 +79,46 @@ app.get('/orders/history', (req, res) => {
   }
 
   res.json(filtered);
+});
+
+// Get orders from Square (testing sandbox)
+app.get('/square-orders', async (req, res) => {
+  try {
+    const response = await axios.post(
+      'https://connect.squareupsandbox.com/v2/orders/search',
+      {
+        location_ids: [SQUARE_LOCATION_ID],
+        query: {
+          filter: {
+            state_filter: {
+              states: ['OPEN', 'COMPLETED']
+            }
+          }
+        }
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${SQUARE_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
+          'Square-Version': '2024-05-15'  // use latest version date or your choice
+        }
+      }
+    );
+
+    // Map Square order data into your format, e.g., nameOrNumber and id
+    const squareOrders = (response.data.orders || []).map(order => {
+      return {
+        id: order.id,
+        nameOrNumber: order.line_items?.[0]?.name || 'Unknown',
+        state: order.state
+      };
+    });
+
+    res.json(squareOrders);
+  } catch (error) {
+    console.error('Error fetching Square orders:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to fetch Square orders' });
+  }
 });
 
 // Delete an order
