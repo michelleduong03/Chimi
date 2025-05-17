@@ -1,12 +1,22 @@
 require('dotenv').config();
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 const express = require('express');
 const cors = require('cors');
 const app = express();
 const PORT = 5001;
 const axios = require('axios');
 
-const SQUARE_ACCESS_TOKEN = process.env.SQUARE_ACCESS_TOKEN;
-const SQUARE_LOCATION_ID = process.env.SQUARE_LOCATION_ID;  
+const SQUARE_ACCESS_TOKEN = process.env.SANDBOX_ACCESS_TOKEN;
+const SQUARE_LOCATION_ID = process.env.SANDBOX_LOCATION_ID;  
+console.log('Square Access Token:', SQUARE_ACCESS_TOKEN ? 'Loaded' : 'Missing');
+console.log('Square Location ID:', SQUARE_LOCATION_ID ? 'Loaded' : 'Missing');
 
 
 // app.use(cors());
@@ -83,36 +93,30 @@ app.get('/orders/history', (req, res) => {
 
 // Get orders from Square (testing sandbox)
 app.get('/square-orders', async (req, res) => {
+  if (!SQUARE_ACCESS_TOKEN || !SQUARE_LOCATION_ID) {
+    return res.status(500).json({ error: 'Missing Square access token or location ID' });
+  }
+
   try {
     const response = await axios.post(
       'https://connect.squareupsandbox.com/v2/orders/search',
       {
-        location_ids: [SQUARE_LOCATION_ID],
-        query: {
-          filter: {
-            state_filter: {
-              states: ['OPEN', 'COMPLETED']
-            }
-          }
-        }
+        location_ids: [SQUARE_LOCATION_ID]
       },
       {
         headers: {
           'Authorization': `Bearer ${SQUARE_ACCESS_TOKEN}`,
           'Content-Type': 'application/json',
-          'Square-Version': '2024-05-15'  // use latest version date or your choice
+          'Square-Version': '2024-05-15'
         }
       }
     );
 
-    // Map Square order data into your format, e.g., nameOrNumber and id
-    const squareOrders = (response.data.orders || []).map(order => {
-      return {
-        id: order.id,
-        nameOrNumber: order.line_items?.[0]?.name || 'Unknown',
-        state: order.state
-      };
-    });
+    const squareOrders = (response.data.orders || []).map(order => ({
+      id: order.id,
+      nameOrNumber: order.line_items?.[0]?.name || 'Unknown',
+      state: order.state
+    }));
 
     res.json(squareOrders);
   } catch (error) {
