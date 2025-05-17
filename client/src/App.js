@@ -39,35 +39,37 @@ function VerticalNav({ selected, setSelected }) {
   );
 }
 
-function CloseDay({ onCloseDay }) {
-  return (
-    <div style={{ padding: 20 }}>
-      <h3>Close Day</h3>
-      <p>Click to save metrics and log the day.</p>
-      <button onClick={onCloseDay}>Close Day</button>
-    </div>
-  );
-}
-
-function Logs({ logs }) {
-  if (!logs.length) return <p style={{ padding: 20 }}>No logs yet.</p>;
-
+function Logs({ logs, orderHistory }) {
   return (
     <div style={{ padding: 20 }}>
       <h3>Saved Metrics Logs</h3>
-      <ul>
-        {logs.map((log, i) => (
-          <li key={i} style={{ marginBottom: 15 }}>
-            <strong>{new Date(log.date).toLocaleString()}:</strong>
-            <ul>
-              <li>Total Orders: {log.totalOrders}</li>
-              <li>Making: {log.making}</li>
-              <li>Pickup: {log.pickup}</li>
-              <li>Complete: {log.complete}</li>
-            </ul>
-          </li>
-        ))}
-      </ul>
+      {logs.length === 0 ? <p>No logs yet.</p> : (
+        <ul>
+          {logs.map((log, i) => (
+            <li key={i} style={{ marginBottom: 15 }}>
+              <strong>{new Date(log.date).toLocaleString()}:</strong>
+              <ul>
+                <li>Total Orders: {log.totalOrders}</li>
+                <li>Making: {log.making}</li>
+                <li>Pickup: {log.pickup}</li>
+                <li>Complete: {log.complete}</li>
+              </ul>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <h3 style={{ marginTop: 40 }}>Completed Order History</h3>
+      {orderHistory.length === 0 ? <p>No completed orders yet.</p> : (
+        <ul>
+          {orderHistory.map((order, i) => (
+            <li key={i}>
+              <strong>{order.nameOrNumber}</strong> – Completed at{' '}
+              {new Date(order.completedAt).toLocaleString()}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
@@ -79,6 +81,12 @@ function App() {
   const [isOwner, setIsOwner] = useState(true);
   const [navSelection, setNavSelection] = useState('orders');
   const [logs, setLogs] = useState([]);
+  const [orderHistory, setOrderHistory] = useState([]);
+
+  const fetchOrderHistory = async () => {
+    const res = await axios.get('http://localhost:5001/orders/history');
+    setOrderHistory(res.data);
+  };
 
   const fetchOrders = async () => {
     const res = await axios.get('http://localhost:5001/orders');
@@ -115,7 +123,7 @@ function App() {
     if (to === 'complete') {
       setTimeout(() => {
         deleteOrder('complete', id);
-      }, 5 * 60 * 1000);
+      }, 5 * 60 * 100);
     }
   };
 
@@ -144,6 +152,7 @@ function App() {
   useEffect(() => {
     if (navSelection === 'logs') {
       fetchLogs();
+      fetchOrderHistory();
     }
   }, [navSelection]);
 
@@ -162,7 +171,7 @@ function App() {
           </button>
         </header>
 
-        {navSelection === 'orders' && (
+        {isOwner && navSelection === 'orders' && (
           <div className="add-order">
             <input
               value={input}
@@ -173,7 +182,7 @@ function App() {
           </div>
         )}
 
-        {isOwner && navSelection === 'orders' && (
+        {navSelection === 'orders' && (
           <div className="bucket-container">
             {BUCKETS.map((bucket) => (
               <BucketColumn
@@ -189,8 +198,8 @@ function App() {
         )}
 
         {isOwner && navSelection === 'metrics' && <Metrics metrics={metrics} />}
-        {isOwner && navSelection === 'closeDay' && <CloseDay onCloseDay={closeDay} />}
-        {isOwner && navSelection === 'logs' && <Logs logs={logs} />}
+        {isOwner && navSelection === 'closeDay' && <closeDay onCloseDay={closeDay} />}
+        {isOwner && navSelection === 'logs' && <Logs logs={logs} orderHistory={orderHistory} />}
       </div>
     </div>
   );
