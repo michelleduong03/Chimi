@@ -56,6 +56,12 @@ npm start
 
 ---
 
+## 💭 System Design
+
+![SystemDesignCafe](https://github.com/user-attachments/assets/b3398cdf-5ede-4e0c-8021-7c940abbfd0e)
+
+---
+
 ## 🧠 Author
 
 Made with ☕ and code by Michelle Duong
