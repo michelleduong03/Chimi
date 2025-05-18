@@ -125,6 +125,45 @@ app.get('/square-orders', async (req, res) => {
   }
 });
 
+// Stores the square orders
+app.post('/import-square-orders', async (req, res) => {
+  if (!SQUARE_ACCESS_TOKEN || !SQUARE_LOCATION_ID) {
+    return res.status(500).json({ error: 'Missing Square credentials' });
+  }
+
+  try {
+    const response = await axios.post(
+      'https://connect.squareupsandbox.com/v2/orders/search',
+      {
+        location_ids: [SQUARE_LOCATION_ID]
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${SQUARE_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
+          'Square-Version': '2024-05-15'
+        }
+      }
+    );
+
+    const squareOrders = (response.data.orders || []).map(order => ({
+      id: order.id,
+      nameOrNumber: order.line_items?.[0]?.name || 'Unknown',
+      state: order.state
+    }));
+
+    // Store in "making" for example — you can change this logic
+    for (const order of squareOrders) {
+      orders.making.push(order);
+    }
+
+    res.json({ message: 'Square orders imported to making bucket', count: squareOrders.length });
+  } catch (error) {
+    console.error('Import error:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to import Square orders' });
+  }
+});
+
 // Delete an order
 app.post('/orders/delete', (req, res) => {
   const { from, id } = req.body;
