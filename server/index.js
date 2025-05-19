@@ -92,6 +92,7 @@ app.get('/orders/history', (req, res) => {
 });
 
 // Get orders from Square (testing sandbox)
+// Get orders from Square (testing sandbox)
 app.get('/square-orders', async (req, res) => {
   if (!SQUARE_ACCESS_TOKEN || !SQUARE_LOCATION_ID) {
     return res.status(500).json({ error: 'Missing Square access token or location ID' });
@@ -163,6 +164,73 @@ app.post('/import-square-orders', async (req, res) => {
     res.status(500).json({ error: 'Failed to import Square orders' });
   }
 });
+
+// Stores the square orders
+app.post('/import-square-orders', async (req, res) => {
+  if (!SQUARE_ACCESS_TOKEN || !SQUARE_LOCATION_ID) {
+    return res.status(500).json({ error: 'Missing Square credentials' });
+  }
+
+  try {
+    const response = await axios.post(
+      'https://connect.squareupsandbox.com/v2/orders/search',
+      {
+        location_ids: [SQUARE_LOCATION_ID]
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${SQUARE_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
+          'Square-Version': '2024-05-15'
+        }
+      }
+    );
+
+    const ordersData = response.data.orders || [];
+
+    const enrichedOrders = await Promise.all((response.data.orders || []).map(async (order) => {
+    // Combine all drink names in one string
+    const drinks = (order.line_items || []).map(item => item.name).join(', ') || 'Unknown';
+
+    // Try to fetch the customer name
+    let customerName = 'Unknown';
+    if (order.customer_id) {
+      try {
+        const customerResponse = await axios.get(
+          `https://connect.squareupsandbox.com/v2/customers/${order.customer_id}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${SQUARE_ACCESS_TOKEN}`,
+              'Square-Version': '2024-05-15'
+            }
+          }
+        );
+        const customer = customerResponse.data.customer;
+        customerName = customer.given_name || customer.family_name || customer.nickname || 'Unknown';
+      } catch (err) {
+        console.warn(`Failed to fetch customer ${order.customer_id}:`, err.message);
+      }
+    }
+
+    return {
+      id: order.id,
+      nameOrNumber: `${customerName} - ${drinks}`,
+      state: order.state
+    };
+  }));
+
+
+    for (const order of enrichedOrders) {
+      orders.making.push(order);
+    }
+
+    res.json({ message: 'Square orders imported to making bucket', count: enrichedOrders.length });
+  } catch (error) {
+    console.error('Import error:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to import Square orders' });
+  }
+});
+
 
 // Delete an order
 app.post('/orders/delete', (req, res) => {
