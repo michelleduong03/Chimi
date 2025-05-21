@@ -74,6 +74,17 @@ function Logs({ logs, orderHistory }) {
   );
 }
 
+function CloseDay({ onCloseDay }) {
+  return (
+    <div style={{ padding: 20 }}>
+      <h2>Close Out the Day</h2>
+      <p>Click the button below to save the day’s metrics and clear orders.</p>
+      <button onClick={onCloseDay}>Close Day</button>
+    </div>
+  );
+}
+
+
 function App() {
   const [orders, setOrders] = useState({ making: [], pickup: [], complete: [] });
   const [input, setInput] = useState('');
@@ -198,7 +209,7 @@ function App() {
         )}
 
         {isOwner && navSelection === 'metrics' && <Metrics metrics={metrics} />}
-        {isOwner && navSelection === 'closeDay' && <closeDay onCloseDay={closeDay} />}
+        {isOwner && navSelection === 'closeDay' && <CloseDay onCloseDay={closeDay} />}
         {isOwner && navSelection === 'logs' && <Logs logs={logs} orderHistory={orderHistory} />}
       </div>
     </div>
