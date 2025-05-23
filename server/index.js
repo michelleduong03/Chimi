@@ -92,7 +92,6 @@ app.get('/orders/history', (req, res) => {
 });
 
 // Get orders from Square (testing sandbox)
-// Get orders from Square (testing sandbox)
 app.get('/square-orders', async (req, res) => {
   if (!SQUARE_ACCESS_TOKEN || !SQUARE_LOCATION_ID) {
     return res.status(500).json({ error: 'Missing Square access token or location ID' });
@@ -128,6 +127,12 @@ app.get('/square-orders', async (req, res) => {
 
 // Stores the square orders
 app.post('/import-square-orders', async (req, res) => {
+  const startOfToday = new Date();
+  startOfToday.setUTCHours(0, 0, 0, 0);
+
+  const endOfToday = new Date();
+  endOfToday.setUTCHours(23, 59, 59, 999);
+
   if (!SQUARE_ACCESS_TOKEN || !SQUARE_LOCATION_ID) {
     return res.status(500).json({ error: 'Missing Square credentials' });
   }
@@ -136,46 +141,17 @@ app.post('/import-square-orders', async (req, res) => {
     const response = await axios.post(
       'https://connect.squareupsandbox.com/v2/orders/search',
       {
-        location_ids: [SQUARE_LOCATION_ID]
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${SQUARE_ACCESS_TOKEN}`,
-          'Content-Type': 'application/json',
-          'Square-Version': '2024-05-15'
+        location_ids: [SQUARE_LOCATION_ID],
+        query: {
+          filter: {
+            date_time_filter: {
+              created_at: {
+                start_at: startOfToday.toISOString(),
+                end_at: endOfToday.toISOString()
+              }
+            }
+          }
         }
-      }
-    );
-
-    const squareOrders = (response.data.orders || []).map(order => ({
-      id: order.id,
-      nameOrNumber: order.line_items?.[0]?.name || 'Unknown',
-      state: order.state
-    }));
-
-    // Store in "making" for example — you can change this logic
-    for (const order of squareOrders) {
-      orders.making.push(order);
-    }
-
-    res.json({ message: 'Square orders imported to making bucket', count: squareOrders.length });
-  } catch (error) {
-    console.error('Import error:', error.response?.data || error.message);
-    res.status(500).json({ error: 'Failed to import Square orders' });
-  }
-});
-
-// Stores the square orders
-app.post('/import-square-orders', async (req, res) => {
-  if (!SQUARE_ACCESS_TOKEN || !SQUARE_LOCATION_ID) {
-    return res.status(500).json({ error: 'Missing Square credentials' });
-  }
-
-  try {
-    const response = await axios.post(
-      'https://connect.squareupsandbox.com/v2/orders/search',
-      {
-        location_ids: [SQUARE_LOCATION_ID]
       },
       {
         headers: {
@@ -188,37 +164,38 @@ app.post('/import-square-orders', async (req, res) => {
 
     const ordersData = response.data.orders || [];
 
-    const enrichedOrders = await Promise.all((response.data.orders || []).map(async (order) => {
-    // Combine all drink names in one string
-    const drinks = (order.line_items || []).map(item => item.name).join(', ') || 'Unknown';
+    const enrichedOrders = await Promise.all(
+      ordersData.map(async (order) => {
+        const drinks = (order.line_items || []).map(item => item.name).join(', ') || 'Unknown';
 
-    // Try to fetch the customer name
-    let customerName = 'Unknown';
-    if (order.customer_id) {
-      try {
-        const customerResponse = await axios.get(
-          `https://connect.squareupsandbox.com/v2/customers/${order.customer_id}`,
-          {
-            headers: {
-              'Authorization': `Bearer ${SQUARE_ACCESS_TOKEN}`,
-              'Square-Version': '2024-05-15'
-            }
+        let customerName = 'Unknown';
+        if (order.customer_id) {
+          try {
+            console.log(`Fetching customer for ID: ${order.customer_id}`);
+            const customerResponse = await axios.get(
+              `https://connect.squareupsandbox.com/v2/customers/${order.customer_id}`,
+              {
+                headers: {
+                  'Authorization': `Bearer ${SQUARE_ACCESS_TOKEN}`,
+                  'Square-Version': '2024-05-15'
+                }
+              }
+            );
+            const customer = customerResponse.data.customer;
+            customerName = customer.given_name || customer.family_name || customer.nickname || 'Unknown';
+            console.log('Customer response:', customerResponse.data);
+          } catch (err) {
+            console.warn(`Failed to fetch customer ${order.customer_id}:`, err.message);
           }
-        );
-        const customer = customerResponse.data.customer;
-        customerName = customer.given_name || customer.family_name || customer.nickname || 'Unknown';
-      } catch (err) {
-        console.warn(`Failed to fetch customer ${order.customer_id}:`, err.message);
-      }
-    }
+        }
 
-    return {
-      id: order.id,
-      nameOrNumber: `${customerName} - ${drinks}`,
-      state: order.state
-    };
-  }));
-
+        return {
+          id: order.id,
+          nameOrNumber: `${customerName} - ${drinks}`,
+          state: order.state
+        };
+      })
+    );
 
     for (const order of enrichedOrders) {
       orders.making.push(order);
@@ -230,7 +207,6 @@ app.post('/import-square-orders', async (req, res) => {
     res.status(500).json({ error: 'Failed to import Square orders' });
   }
 });
-
 
 // Delete an order
 app.post('/orders/delete', (req, res) => {
@@ -283,7 +259,17 @@ app.post('/close-day', (req, res) => {
   }
 });
 
+const importSquareOrders = async () => {
+  try {
+    const response = await axios.post('http://localhost:5001/import-square-orders');
+    console.log('Orders imported on startup:', response.data);
+  } catch (err) {
+    console.error('Failed to import orders on startup:', err.message);
+  }
+};
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+  importSquareOrders();
 });
