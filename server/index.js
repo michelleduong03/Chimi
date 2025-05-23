@@ -12,11 +12,13 @@ const cors = require('cors');
 const app = express();
 const PORT = 5001;
 const axios = require('axios');
+const deletedOrderIds = new Set();
 
 const SQUARE_ACCESS_TOKEN = process.env.SANDBOX_ACCESS_TOKEN;
 const SQUARE_LOCATION_ID = process.env.SANDBOX_LOCATION_ID;  
 console.log('Square Access Token:', SQUARE_ACCESS_TOKEN ? 'Loaded' : 'Missing');
 console.log('Square Location ID:', SQUARE_LOCATION_ID ? 'Loaded' : 'Missing');
+
 
 
 // app.use(cors());
@@ -55,6 +57,11 @@ app.post('/orders/move', (req, res) => {
     const [order] = orders[from].splice(orderIndex, 1);
     orders[to].push(order);
 
+    if (to == 'pickup') {
+      if (order.phone) {
+        sendReadyText(order.phone, order.nameOrNumber);
+      }
+    }
     // move to complete, save to completedOrders
     if (to === 'complete') {
       order.completedAt = new Date();
@@ -169,6 +176,7 @@ app.post('/import-square-orders', async (req, res) => {
         const drinks = (order.line_items || []).map(item => item.name).join(', ') || 'Unknown';
 
         let customerName = 'Unknown';
+        let customerPhone = null;
         if (order.customer_id) {
           try {
             console.log(`Fetching customer for ID: ${order.customer_id}`);
@@ -183,6 +191,10 @@ app.post('/import-square-orders', async (req, res) => {
             );
             const customer = customerResponse.data.customer;
             customerName = customer.given_name || customer.family_name || customer.nickname || 'Unknown';
+            
+            if (customer.phone_number) {
+              customerPhone = customer.phone_number;
+            }
             console.log('Customer response:', customerResponse.data);
           } catch (err) {
             console.warn(`Failed to fetch customer ${order.customer_id}:`, err.message);
@@ -192,7 +204,8 @@ app.post('/import-square-orders', async (req, res) => {
         return {
           id: order.id,
           nameOrNumber: `${customerName} - ${drinks}`,
-          state: order.state
+          state: order.state,
+          phone: customerPhone
         };
       })
     );
@@ -201,10 +214,22 @@ app.post('/import-square-orders', async (req, res) => {
     //   orders.making.push(order);
     // }
     // avoid duplicate orders
-    const existingIds = new Set(orders.making.map(o => o.id));
+    // const existingIds = new Set(orders.making.map(o => o.id));
+
+    // for (const order of enrichedOrders) {
+    //   if (!existingIds.has(order.id)) {
+    //     orders.making.push(order);
+    //   }
+    // }
+    const existingMakingIds = new Set(orders.making.map(o => o.id));
+    const existingCompletedIds = new Set(completedOrders.map(o => o.id));
 
     for (const order of enrichedOrders) {
-      if (!existingIds.has(order.id)) {
+      if (
+        !existingMakingIds.has(order.id) &&
+        !existingCompletedIds.has(order.id) &&
+        !deletedOrderIds.has(order.id)
+      ) {
         orders.making.push(order);
       }
     }
@@ -221,6 +246,7 @@ app.post('/orders/delete', (req, res) => {
   const { from, id } = req.body;
   const index = orders[from].findIndex(o => o.id === id);
   if (index !== -1) {
+    deletedOrderIds.add(id);
     orders[from].splice(index, 1);
     res.send('Order deleted');
   } else {
@@ -275,6 +301,31 @@ const importSquareOrders = async () => {
     console.error('Failed to import orders on startup:', err.message);
   }
 };
+
+// for SMS notifications
+const twilio = require('twilio');
+
+const accountSid = process.env.TWILIO_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const twilioPhone = process.env.TWILIO_PHONE;
+const client = twilio(accountSid, authToken);
+console.log('Twilio SID:', accountSid ? 'Loaded' : 'Missing');
+console.log('Twilio Auth Token:', authToken ? 'Loaded' : 'Missing');
+console.log('Twilio Phone:', twilioPhone ? 'Loaded' : 'Missing');
+
+
+async function sendReadyText(customerPhone, nameOrNumber) {
+  try {
+    await client.messages.create({
+      body: `Hi! Your order (${nameOrNumber}) is ready for pickup. ☕`,
+      from: twilioPhone,
+      to: customerPhone 
+    });
+  } catch (err) {
+    console.error('Failed to send SMS:', err.message);
+  }
+}
+
 
 // Start server
 app.listen(PORT, () => {
