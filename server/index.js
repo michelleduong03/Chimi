@@ -197,8 +197,16 @@ app.post('/import-square-orders', async (req, res) => {
       })
     );
 
+    // for (const order of enrichedOrders) {
+    //   orders.making.push(order);
+    // }
+    // avoid duplicate orders
+    const existingIds = new Set(orders.making.map(o => o.id));
+
     for (const order of enrichedOrders) {
-      orders.making.push(order);
+      if (!existingIds.has(order.id)) {
+        orders.making.push(order);
+      }
     }
 
     res.json({ message: 'Square orders imported to making bucket', count: enrichedOrders.length });
