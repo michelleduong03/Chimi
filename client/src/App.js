@@ -4,7 +4,7 @@ import './App.css';
 import Metrics from './components/Metrics';
 import BucketColumn from './components/BucketColumn';
 
-const BUCKETS = ['making', 'pickup', 'complete'];
+const BUCKETS = ['making', 'pickup'];
 
 // Simple vertical nav component
 function VerticalNav({ selected, setSelected }) {
