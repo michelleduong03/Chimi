@@ -155,6 +155,20 @@ function App() {
     }
   };
 
+  const syncSquareOrders = async () => {
+    await axios.post('http://localhost:5001/import-square-orders');
+    fetchOrders(); // refresh the frontend with the new data
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      syncSquareOrders();
+    }, 15000); // every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+
   useEffect(() => {
     fetchOrders();
     if (isOwner) fetchMetrics();
@@ -180,6 +194,11 @@ function App() {
           >
             Switch to {isOwner ? 'Customer' : 'Owner'} View
           </button>
+          {/* {isOwner && (
+            <button onClick={syncSquareOrders}>
+              Sync Orders from Square
+            </button>
+          )} */}
         </header>
 
         {isOwner && navSelection === 'orders' && (
