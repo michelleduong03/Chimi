@@ -7,6 +7,11 @@ export default function BucketColumn({ bucket, orders, isOwner, onMove, onDelete
       {orders.map((order) => (
         <div key={order.id} className="order-card">
           <span>{order.nameOrNumber}</span>
+          {order.drink && (
+            <div style={{ fontSize: '0.8em', color: '#777', marginTop: 4 }}>
+              {order.drink}
+            </div>
+          )}
           {isOwner && (
             <div className="order-actions">
               {['making', 'pickup', 'complete']
