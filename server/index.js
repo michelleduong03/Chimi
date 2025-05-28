@@ -19,8 +19,6 @@ const SQUARE_LOCATION_ID = process.env.SANDBOX_LOCATION_ID;
 console.log('Square Access Token:', SQUARE_ACCESS_TOKEN ? 'Loaded' : 'Missing');
 console.log('Square Location ID:', SQUARE_LOCATION_ID ? 'Loaded' : 'Missing');
 
-
-
 // app.use(cors());
 app.use(cors({
     origin: 'http://localhost:3000',
@@ -204,23 +202,13 @@ app.post('/import-square-orders', async (req, res) => {
         return {
           id: order.id,
           nameOrNumber: `${customerName} - ${drinks}`,
+          drinks: drinks,
           state: order.state,
           phone: customerPhone
         };
       })
     );
 
-    // for (const order of enrichedOrders) {
-    //   orders.making.push(order);
-    // }
-    // avoid duplicate orders
-    // const existingIds = new Set(orders.making.map(o => o.id));
-
-    // for (const order of enrichedOrders) {
-    //   if (!existingIds.has(order.id)) {
-    //     orders.making.push(order);
-    //   }
-    // }
     const existingMakingIds = new Set(orders.making.map(o => o.id));
     const existingCompletedIds = new Set(completedOrders.map(o => o.id));
 
