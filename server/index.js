@@ -63,7 +63,7 @@ app.post('/orders/move', (req, res) => {
       }
     }
     // move to complete, save to completedOrders
-    if (to === 'complete') {
+    if (to === ('complete' || 'pickup')) {
       order.completedAt = new Date();
       completedOrders.push(order);
     }
@@ -302,33 +302,57 @@ const importSquareOrders = async () => {
   }
 };
 
-// for SMS notifications
-const twilio = require('twilio');
+// for SMS notifications (LATER IMPLEMENTATION TOO COSTLY)
+// const twilio = require('twilio');
 
-const accountSid = process.env.TWILIO_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const twilioPhone = process.env.TWILIO_PHONE;
-const client = twilio(accountSid, authToken);
-console.log('Twilio SID:', accountSid ? 'Loaded' : 'Missing');
-console.log('Twilio Auth Token:', authToken ? 'Loaded' : 'Missing');
-console.log('Twilio Phone:', twilioPhone ? 'Loaded' : 'Missing');
+// const accountSid = process.env.TWILIO_SID;
+// const authToken = process.env.TWILIO_AUTH_TOKEN;
+// const twilioPhone = process.env.TWILIO_PHONE;
+// const client = twilio(accountSid, authToken);
+// console.log('Twilio SID:', accountSid ? 'Loaded' : 'Missing');
+// console.log('Twilio Auth Token:', authToken ? 'Loaded' : 'Missing');
+// console.log('Twilio Phone:', twilioPhone ? 'Loaded' : 'Missing');
 
-
-async function sendReadyText(customerPhone, nameOrNumber) {
-  try {
-    await client.messages.create({
-      body: `Hi! Your order (${nameOrNumber}) is ready for pickup. ☕`,
-      from: twilioPhone,
-      to: customerPhone 
-    });
-  } catch (err) {
-    console.error('Failed to send SMS:', err.message);
-  }
-}
-
+// async function sendReadyText(customerPhone, nameOrNumber) {
+//   try {
+//     await client.messages.create({
+//       body: `Hi! Your order (${nameOrNumber}) is ready for pickup. ☕`,
+//       from: twilioPhone,
+//       to: customerPhone 
+//     });
+//   } catch (err) {
+//     console.error('Failed to send SMS:', err.message);
+//   }
+// }
 
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
   importSquareOrders();
 });
+
+// require('dotenv').config();
+// const express = require('express');
+// const cors = require('cors');
+// const app = express();
+// const PORT = 5001;
+
+// const { importSquareOrders } = require('./services/square');
+// const ordersRouter = require('./routes/orders');
+// const squareRouter = require('./routes/square');
+// const webhookRouter = require('./routes/webhook');
+
+// process.on('uncaughtException', err => console.error('Uncaught Exception:', err));
+// process.on('unhandledRejection', (reason, promise) => console.error('Unhandled Rejection:', promise, 'reason:', reason));
+
+// app.use(cors({ origin: 'http://localhost:3000' }));
+// app.use(express.json());
+
+// app.use('/orders', ordersRouter);
+// app.use('/square', squareRouter);
+// app.use('/webhook', webhookRouter);
+
+// app.listen(PORT, () => {
+//   console.log(`Server running on http://localhost:${PORT}`);
+//   importSquareOrders();
+// });
