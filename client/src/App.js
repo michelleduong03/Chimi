@@ -155,19 +155,18 @@ function App() {
     }
   };
 
-  // const syncSquareOrders = async () => {
-  //   await axios.post('http://localhost:5001/import-square-orders');
-  //   fetchOrders(); // refresh the frontend with the new data
-  // };
+  const syncSquareOrders = async () => {
+    await axios.post('http://localhost:5001/import-square-orders');
+    fetchOrders(); // refresh the frontend with the new data
+  };
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     syncSquareOrders();
-  //   }, 15000); // every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      syncSquareOrders();
+    }, 15000); // every 30 seconds
 
-  //   return () => clearInterval(interval);
-  // }, []);
-
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     fetchOrders();
