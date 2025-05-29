@@ -6,6 +6,13 @@ import BucketColumn from './components/BucketColumn';
 
 const BUCKETS = ['making', 'pickup'];
 
+// for the different views/screens
+// const viewMode = new URLSearchParams(window.location.search).get('view');
+// const isOwner = viewMode === 'owner';
+// const isCustomer = viewMode === 'public';
+// const isKitchen = viewMode === 'making';
+
+
 // Simple vertical nav component
 function VerticalNav({ selected, setSelected }) {
   return (
