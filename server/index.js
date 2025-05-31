@@ -55,13 +55,13 @@ app.post('/orders/move', (req, res) => {
     const [order] = orders[from].splice(orderIndex, 1);
     orders[to].push(order);
 
-    if (to == 'pickup') {
-      if (order.phone) {
-        sendReadyText(order.phone, order.nameOrNumber);
-      }
-    }
+    // if (to == 'pickup') {
+    //   if (order.phone) {
+    //     sendReadyText(order.phone, order.nameOrNumber);
+    //   }
+    // }
     // move to complete, save to completedOrders
-    if (to === ('complete' || 'pickup')) {
+    if (to === 'complete' || to === 'pickup') {
       order.completedAt = new Date();
       completedOrders.push(order);
     }
