@@ -1,6 +1,6 @@
 body {
   font-family: 'Inter', sans-serif;
-  background-color: #f9f9f9;
+  background-color: #fff0f5;/*#f9f9f9;*/
   margin: 0;
   padding: 0;
 }
@@ -20,7 +20,8 @@ body {
 
 .view-toggle {
   padding: 8px 14px;
-  background: #eef2ff;
+  /* background: #eef2ff; */
+  background:  #fff0f5;
   color: #4f46e5;
   border: none;
   border-radius: 8px;
@@ -30,19 +31,22 @@ body {
 }
 
 .view-toggle:hover {
-  background: #e0e7ff;
+  /* background: #e0e7ff; */
+  background: #f8bbd0;
 }
 
 .add-order {
   display: flex;
   gap: 10px;
   margin-bottom: 30px;
+  /* border: 1px solid #f8bbd0; */
 }
 
 .add-order input {
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid #ddd;
+  /* border: 1px solid #ddd; */
+   border: 1px solid #f8bbd0;
   flex-grow: 1;
 }
 
@@ -50,7 +54,8 @@ body {
   padding: 10px 16px;
   border: none;
   border-radius: 8px;
-  background-color: #4f46e5;
+  /* background-color: #4f46e5; */
+  background-color: #f06292;
   color: white;
   cursor: pointer;
   font-weight: bold;
@@ -58,11 +63,14 @@ body {
 }
 
 .add-order button:hover {
-  background-color: #4338ca;
+  /* background-color: #4338ca; */
+  background-color: #ec407a;
 }
 
 .metrics {
-  background: white;
+  /* background: white; */
+  background: #fff;
+  border: 1px solid #f8bbd0;
   padding: 20px;
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
@@ -78,7 +86,9 @@ body {
 }
 
 .bucket {
-  background: white;
+  /* background: white; */
+  background: #fff;
+  border: 1px solid #f8bbd0;
   padding: 20px;
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
@@ -86,7 +96,8 @@ body {
 }
 
 .order-card {
-  background-color: #f1f5f9;
+  /* background-color: #f1f5f9; */
+  background-color:  #fff0f5;
   padding: 10px 12px;
   border-radius: 12px;
   margin: 8px 0;
@@ -97,7 +108,9 @@ body {
 
 .order-actions button {
   margin-left: 6px;
-  background: #e0e7ff;
+  /* background: #e0e7ff; */
+  background: #f8bbd0;
+  color: #880e4f;
   border: none;
   border-radius: 6px;
   padding: 5px 10px;
@@ -106,12 +119,15 @@ body {
 }
 
 .order-actions .delete {
-  background: #fee2e2;
-  color: #b91c1c;
+  /* background: #fee2e2;
+  color: #b91c1c; */
+  background: #ffcdd2;
+  color: #c62828;
 }
 
 .order-actions .delete:hover {
-  background: #fecaca;
+  /* background: #fecaca; */
+  background: #ef9a9a;
 }
 
 .app.owner-view {
@@ -121,8 +137,10 @@ body {
 
 .vertical-nav {
   width: 220px;
-  background-color: #1e293b;
-  color: white;
+  /* background-color: #1e293b;
+  color: white; */
+  background-color: #f7d3e0;
+  color: #9d366d;
   display: flex;
   flex-direction: column;
   padding: 20px;
@@ -150,17 +168,21 @@ body {
 }
 
 .nav-button:hover {
-  background-color: #3b82f6;
+  /* background-color: #3b82f6; */
+  background-color: #f06292;
+  color: white;
 }
 
 .nav-button.active {
-  background-color: #3b82f6;
+  /* background-color: #3b82f6; */
+  background-color: #f06292;
+  color: white;
 }
 
 .main-content {
   padding: 40px;
   flex-grow: 1;
-  background: #f9fafb;
+  background:  #fff0f5;
   min-height: 100vh;
   align-items: center;
 }
