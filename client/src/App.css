@@ -191,3 +191,24 @@ body {
   margin-left: 200px;
 }
 
+.tab-button {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 10px;
+  background-color: #f8c8dc; /* light baby pink */
+  color: #5a2a3c; /* darker pink/purple text */
+  font-weight: normal;
+  transition: background-color 0.3s ease;
+}
+
+.tab-button:hover {
+  background-color: #f5a7c4; /* a bit stronger pink on hover */
+}
+
+.tab-button.active {
+  background-color: #e86ca6; /* deeper baby pink */
+  color: white;
+  font-weight: bold;
+}
