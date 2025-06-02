@@ -3,94 +3,12 @@ import axios from 'axios';
 import './App.css';
 import Metrics from './components/Metrics';
 import BucketColumn from './components/BucketColumn';
+import DisplayView from './DisplayView';
+import VerticalNav from './components/VerticalNav';
+import Logs from './components/Logs';
+import CloseDay from './components/CloseDay';
 
 const BUCKETS = ['making', 'pickup'];
-
-// for the different views/screens
-// const viewMode = new URLSearchParams(window.location.search).get('view');
-// const isOwner = viewMode === 'owner';
-// const isCustomer = viewMode === 'public';
-// const isKitchen = viewMode === 'making';
-
-
-// Simple vertical nav component
-function VerticalNav({ selected, setSelected }) {
-  return (
-    <nav className="vertical-nav">
-      <h2>Owner Menu</h2>
-      <button
-        className={selected === 'orders' ? 'nav-button active' : 'nav-button'}
-        onClick={() => setSelected('orders')}
-      >
-        Orders
-      </button>
-      <button
-        className={selected === 'metrics' ? 'nav-button active' : 'nav-button'}
-        onClick={() => setSelected('metrics')}
-      >
-        Metrics
-      </button>
-      <button
-        className={selected === 'closeDay' ? 'nav-button active' : 'nav-button'}
-        onClick={() => setSelected('closeDay')}
-      >
-        Close Day
-      </button>
-      <button
-        className={selected === 'logs' ? 'nav-button active' : 'nav-button'}
-        onClick={() => setSelected('logs')}
-      >
-        Logs
-      </button>
-    </nav>
-  );
-}
-
-function Logs({ logs, orderHistory }) {
-  return (
-    <div style={{ padding: 20 }}>
-      <h3>Saved Metrics Logs</h3>
-      {logs.length === 0 ? <p>No logs yet.</p> : (
-        <ul>
-          {logs.map((log, i) => (
-            <li key={i} style={{ marginBottom: 15 }}>
-              <strong>{new Date(log.date).toLocaleString()}:</strong>
-              <ul>
-                <li>Total Orders: {log.totalOrders}</li>
-                <li>Making: {log.making}</li>
-                <li>Pickup: {log.pickup}</li>
-                <li>Complete: {log.complete}</li>
-              </ul>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <h3 style={{ marginTop: 40 }}>Completed Order History</h3>
-      {orderHistory.length === 0 ? <p>No completed orders yet.</p> : (
-        <ul>
-          {orderHistory.map((order, i) => (
-            <li key={i}>
-              <strong>{order.nameOrNumber}</strong> – Completed at{' '}
-              {new Date(order.completedAt).toLocaleString()}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
-function CloseDay({ onCloseDay }) {
-  return (
-    <div style={{ padding: 20 }}>
-      <h2>Close Out the Day</h2>
-      <p>Click the button below to save the day’s metrics and clear orders.</p>
-      <button onClick={onCloseDay}>Close Day</button>
-    </div>
-  );
-}
-
 
 function App() {
   const [orders, setOrders] = useState({ making: [], pickup: [], complete: [] });
@@ -100,6 +18,7 @@ function App() {
   const [navSelection, setNavSelection] = useState('orders');
   const [logs, setLogs] = useState([]);
   const [orderHistory, setOrderHistory] = useState([]);
+  const [logsTab, setLogsTab] = useState('logs');
 
   const fetchOrderHistory = async () => {
     const res = await axios.get('http://localhost:5001/orders/history');
@@ -162,7 +81,7 @@ function App() {
     }
   };
 
-  const syncSquareOrders = async () => {
+ const syncSquareOrders = async () => {
     await axios.post('http://localhost:5001/import-square-orders');
     fetchOrders(); // refresh the frontend with the new data
   };
@@ -194,17 +113,10 @@ function App() {
       <div className="main-content">
         <header className="header">
           <h1>☕ Chimi Order System</h1>
-          <button
-            className="view-toggle"
-            onClick={() => setIsOwner(!isOwner)}
-          >
+          <button className="view-toggle" onClick={() => setIsOwner(!isOwner)}>
             Switch to {isOwner ? 'Customer' : 'Owner'} View
           </button>
-          {isOwner && (
-            <button onClick={syncSquareOrders}>
-              Sync Orders from Square
-            </button>
-          )}
+          {isOwner && <button onClick={syncSquareOrders}>Sync Orders from Square</button>}
         </header>
 
         {isOwner && navSelection === 'orders' && (
@@ -219,23 +131,46 @@ function App() {
         )}
 
         {navSelection === 'orders' && (
-          <div className="bucket-container">
-            {BUCKETS.map((bucket) => (
-              <BucketColumn
-                key={bucket}
-                bucket={bucket}
-                orders={orders[bucket]}
-                isOwner={isOwner}
-                onMove={moveOrder}
-                onDelete={deleteOrder}
-              />
-            ))}
-          </div>
+          isOwner ? (
+            <div className="bucket-container">
+              {BUCKETS.map((bucket) => (
+                <BucketColumn
+                  key={bucket}
+                  bucket={bucket}
+                  orders={orders[bucket]}
+                  isOwner={isOwner}
+                  onMove={moveOrder}
+                  onDelete={deleteOrder}
+                />
+              ))}
+            </div>
+          ) : (
+            <DisplayView orders={orders} />
+          )
         )}
 
         {isOwner && navSelection === 'metrics' && <Metrics metrics={metrics} />}
         {isOwner && navSelection === 'closeDay' && <CloseDay onCloseDay={closeDay} />}
-        {isOwner && navSelection === 'logs' && <Logs logs={logs} orderHistory={orderHistory} />}
+        {isOwner && navSelection === 'logs' && (
+          <>
+            <div style={{ marginBottom: 20 }}>
+              <button
+                className={`tab-button ${logsTab === 'logs' ? 'active' : ''}`}
+                onClick={() => setLogsTab('logs')}
+              >
+                Logs
+              </button>
+
+              <button
+                className={`tab-button ${logsTab === 'history' ? 'active' : ''}`}
+                onClick={() => setLogsTab('history')}
+              >
+                Order History
+              </button>
+            </div>
+            <Logs logsTab={logsTab} logs={logs} orderHistory={orderHistory} />
+          </>
+        )}
       </div>
     </div>
   );
