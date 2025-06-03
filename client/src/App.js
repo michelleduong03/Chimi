@@ -3,7 +3,7 @@ import axios from 'axios';
 import './App.css';
 import Metrics from './components/Metrics';
 import BucketColumn from './components/BucketColumn';
-import DisplayView from './DisplayView';
+import DisplayView from './components/DisplayView';
 import VerticalNav from './components/VerticalNav';
 import Logs from './components/Logs';
 import CloseDay from './components/CloseDay';
