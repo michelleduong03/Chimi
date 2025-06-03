@@ -213,37 +213,269 @@ body {
   font-weight: bold;
 }
 
+
+
+/* METRICS */
 .metrics-container {
-  background: #ffe6f0;
-  border-radius: 12px;
   padding: 24px;
+  background-color: #fff0f5;
+  border-radius: 16px;
+  max-width: 700px;
   margin: 20px auto;
-  max-width: 600px;
-  color: #333;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
 .metrics-header {
-  border-bottom: 2px solid #ffb6c1;
-  padding-bottom: 6px;
-  margin-bottom: 16px;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   color: #cc3366;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 .metrics-subheader {
-  font-size: 1.1rem;
-  margin-top: 30px;
-  margin-bottom: 10px;
+  font-size: 1.4rem;
   color: #b30059;
+  margin-top: 40px;
+  margin-bottom: 12px;
 }
 
-.metrics-list {
-  list-style: none;
+.metrics-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.metric-card {
+  background: #ffe6f0;
+  border-radius: 16px;
+  padding: 14px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  color: #333;
+  font-family: 'Arial', sans-serif;
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+}
+
+.metric-card strong {
+  color: #cc3366;
+}
+
+
+
+/* LOGS */
+
+/* Container with nice padding and background */
+.logs-container {
+  padding: 20px;
+  background: #fff0f6;
+  border-radius: 16px;
+  box-shadow: 0 6px 12px rgba(255, 182, 193, 0.3);
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+/* Headers with cute emoji and bubbly color */
+.logs-header {
+  color: #d6336c;
+  font-size: 1.6rem;
+  margin-bottom: 15px;
+  text-align: center;
+  text-shadow: 1px 1px 3px #ff9fb1;
+}
+
+/* Empty messages with italic style and soft color */
+.empty-msg {
+  color: #ff87ab;
+  font-style: italic;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* List styles */
+.logs-list {
+  list-style-type: none;
   padding-left: 0;
 }
 
-.metrics-list-item {
-  margin-bottom: 6px;
+/* Each log item with a bubbly card style */
+.log-item {
+  background: #ffe3ec;
+  border-radius: 12px;
+  padding: 12px 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 3px 8px rgba(255, 144, 172, 0.4);
+  transition: transform 0.2s ease;
+}
+
+.log-item:hover {
+  transform: scale(1.03);
+}
+
+/* Date text style */
+.log-date, .order-date {
+  color: #ba2d65;
+}
+
+/* Numbers highlighted */
+.log-number {
+  color: #ff4d6d;
+  font-weight: bold;
+}
+
+/* Nested list for details */
+.log-details {
+  margin-top: 6px;
+  padding-left: 18px;
+  color: #cc5c77;
+}
+
+/* Completed order names */
+.order-name {
+  color: #d6336c;
+  font-weight: 700;
+}
+
+
+/* CLOSE DAY */
+.close-day-container {
+  background: #ffe4ec;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 320px;
+  margin: 20px auto;
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 4px 10px rgba(255, 182, 193, 0.3);
+}
+
+.close-day-title {
+  color: #d14785;
+  margin-bottom: 8px;
+}
+
+.close-day-text {
+  color: #a9447f;
+  margin-bottom: 20px;
+}
+
+.metrics-summary {
+  background: #ffd7e8;
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #9b3d6b;
+  text-align: left;
+}
+
+.metrics-summary ul {
+  margin: 8px 0 0 16px;
+  padding: 0;
+  list-style: disc;
+}
+
+.close-day-button {
+  background: #ff99c8;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(255, 153, 200, 0.4);
+}
+
+.close-day-button:hover:not(:disabled) {
+  background: #ff78b5;
+  box-shadow: 0 6px 14px rgba(255, 120, 181, 0.6);
+}
+
+.close-day-button:disabled {
+  background: #ffc9dc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Confirmation modal */
+
+.confirm-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 182, 193, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.confirm-box {
+  background: white;
+  padding: 24px 32px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(255, 182, 193, 0.8);
+  text-align: center;
+  max-width: 280px;
+}
+
+.confirm-btn {
+  margin: 12px 8px 0;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 28px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  color: white;
+}
+
+.confirm-yes {
+  background: #d14785;
+}
+
+.confirm-yes:hover:not(:disabled) {
+  background: #a22f5a;
+}
+
+.confirm-no {
+  background: #ff99c8;
+  color: #7a2e57;
+}
+
+.confirm-no:hover:not(:disabled) {
+  background: #ff7cae;
+  color: white;
+}
+
+.confirm-btn:disabled {
+  background: #ffc9dc;
+  cursor: not-allowed;
+}
+
+/* Feedback messages */
+
+.feedback-message {
+  margin-top: 16px;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.feedback-message.success {
+  background: #ffd7e8;
+  color: #9b3d6b;
+}
+
+.feedback-message.error {
+  background: #f8c8d8;
+  color: #8b294e;
 }
