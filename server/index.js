@@ -275,12 +275,6 @@ app.post('/orders/delete', (req, res) => {
 
 // Get metrics
 app.get('/metrics', (req, res) => {
-  // res.json({
-  //   totalOrders: orders.making.length + orders.pickup.length + orders.complete.length,
-  //   making: orders.making.length,
-  //   pickup: orders.pickup.length,
-  //   complete: orders.complete.length,
-  // });
   const totalOrders = orders.making.length + orders.pickup.length + orders.complete.length;
 
   // Prep time in minutes for completed orders
