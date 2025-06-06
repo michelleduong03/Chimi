@@ -23,6 +23,7 @@ console.log('Square Location ID:', SQUARE_LOCATION_ID ? 'Loaded' : 'Missing');
 app.use(cors({
     origin: 'http://localhost:3000',
 }));
+
 app.use(express.json());
 
 let orders = {
@@ -40,7 +41,7 @@ app.get('/orders', (req, res) => {
 app.post('/orders', (req, res) => {
   const { nameOrNumber } = req.body;
   console.log('Received order:', nameOrNumber);
-  orders.making.push({ id: Date.now(), nameOrNumber });
+  orders.making.push({ id: Date.now(), nameOrNumber, createdAt: new Date() });
   res.status(201).send('Order added');
 });
 
@@ -230,25 +231,91 @@ app.post('/import-square-orders', async (req, res) => {
 });
 
 // Delete an order
+// app.post('/orders/delete', (req, res) => {
+//   const { from, id } = req.body;
+//   const index = orders[from].findIndex(o => o.id === id);
+//   if (index !== -1) {
+//     deletedOrderIds.add(id);
+//     orders[from].splice(index, 1);
+//     res.send('Order deleted');
+//   } else {
+//     res.status(404).send('Order not found');
+//   }
+// });
 app.post('/orders/delete', (req, res) => {
   const { from, id } = req.body;
-  const index = orders[from].findIndex(o => o.id === id);
-  if (index !== -1) {
+
+  let removed = false;
+
+  if (orders[from]) {
+    const index = orders[from].findIndex(o => o.id === id);
+    if (index !== -1) {
+      orders[from].splice(index, 1);
+      removed = true;
+    }
+  }
+
+  // Also remove from completedOrders if deleting from 'complete'
+  if (from === 'complete') {
+    const compIndex = completedOrders.findIndex(o => o.id === id);
+    if (compIndex !== -1) {
+      completedOrders.splice(compIndex, 1);
+      removed = true;
+    }
+  }
+
+  if (removed) {
     deletedOrderIds.add(id);
-    orders[from].splice(index, 1);
     res.send('Order deleted');
   } else {
     res.status(404).send('Order not found');
   }
 });
 
+
 // Get metrics
 app.get('/metrics', (req, res) => {
+  // res.json({
+  //   totalOrders: orders.making.length + orders.pickup.length + orders.complete.length,
+  //   making: orders.making.length,
+  //   pickup: orders.pickup.length,
+  //   complete: orders.complete.length,
+  // });
+  const totalOrders = orders.making.length + orders.pickup.length + orders.complete.length;
+
+  // Prep time in minutes for completed orders
+  const avgPrepTime = (() => {
+    const times = completedOrders
+      .filter(o => o.createdAt && o.completedAt)
+      .map(o => (new Date(o.completedAt) - new Date(o.createdAt)) / 60000);
+    return times.length ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : null;
+  })();
+
+  // Orders per hour
+  const allOrders = [...orders.making, ...orders.pickup, ...orders.complete, ...completedOrders];
+  const ordersPerHour = {};
+  allOrders.forEach(o => {
+    if (!o.createdAt) return;
+    const hour = new Date(o.createdAt).getHours().toString().padStart(2, '0') + ':00';
+    ordersPerHour[hour] = (ordersPerHour[hour] || 0) + 1;
+  });
+
+  // Peak times (most active hours)
+  const peakTimes = (() => {
+    const entries = Object.entries(ordersPerHour);
+    if (!entries.length) return null;
+    const max = Math.max(...entries.map(([, count]) => count));
+    return entries.filter(([, count]) => count === max).map(([hour]) => hour);
+  })();
+
   res.json({
-    totalOrders: orders.making.length + orders.pickup.length + orders.complete.length,
+    totalOrders,
     making: orders.making.length,
     pickup: orders.pickup.length,
     complete: orders.complete.length,
+    avgPrepTime,
+    ordersPerHour,
+    peakTimes,
   });
 });
 
