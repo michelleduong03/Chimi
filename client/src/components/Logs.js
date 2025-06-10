@@ -7,7 +7,7 @@ function Logs({ logsTab, logs, orderHistory }) {
         <>
           <h3 className="logs-header">📊 Saved Metrics Logs</h3>
           {logs.length === 0 ? (
-            <p className="empty-msg">No logs yet. ✨</p>
+            <p className="empty-msg">No logs yet.</p>
           ) : (
             <ul className="logs-list">
               {logs.map((log, i) => (
@@ -34,7 +34,6 @@ function Logs({ logsTab, logs, orderHistory }) {
           ) : (
             <ul className="logs-list">
               {orderHistory.map((order, i) => {
-                // Split nameOrNumber by ' - ', take the second part (drinks), or fallback to whole string
                 const drinks = order.nameOrNumber.split(' - ')[1] || order.nameOrNumber;
 
                 return (
