@@ -116,7 +116,7 @@ function App() {
           <button className="view-toggle" onClick={() => setIsOwner(!isOwner)}>
             Switch to {isOwner ? 'Customer' : 'Owner'} View
           </button>
-          {isOwner && <button onClick={syncSquareOrders}>Sync Orders from Square</button>}
+          {isOwner && <button className="view-toggle" onClick={syncSquareOrders}>Sync Orders from Square</button>}
         </header>
 
         {isOwner && navSelection === 'orders' && (
