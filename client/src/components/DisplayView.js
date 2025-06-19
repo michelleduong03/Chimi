@@ -4,52 +4,52 @@ function DisplayView({ orders }) {
   const makingOrders = orders.making || [];
   const pickupOrders = orders.pickup || [];
 
-  const containerStyle = {
-    padding: '40px',
-    background: '#fffaf0', // soft cream background
-    minHeight: '100vh',
-    fontFamily: 'sans-serif',
-  };
+  // const containerStyle = {
+  //   padding: '40px',
+  //   background: '#fffaf0',
+  //   minHeight: '100vh',
+  //   fontFamily: 'sans-serif',
+  // };
 
-  const sectionContainerStyle = {
-    display: 'flex',
-    gap: '20px',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    marginTop: '30px',
-  };
+  // const sectionContainerStyle = {
+  //   display: 'flex',
+  //   gap: '20px',
+  //   justifyContent: 'center',
+  //   flexWrap: 'wrap',
+  //   marginTop: '30px',
+  // };
 
-  const sectionStyle = {
-    background: '#fdf6ec', // warm beige card
-    padding: '20px',
-    borderRadius: '20px',
-    width: '360px',
-    boxShadow: '0 4px 12px rgba(204, 178, 154, 0.2)',
-  };
+  // const sectionStyle = {
+  //   background: '#fdf6ec',
+  //   padding: '20px',
+  //   borderRadius: '20px',
+  //   width: '360px',
+  //   boxShadow: '0 4px 12px rgba(204, 178, 154, 0.2)',
+  // };
 
-  const titleStyle = {
-    textAlign: 'center',
-    color: '#7d5f4c', // soft mocha text
-    marginBottom: '12px',
-    fontSize: '24px',
-    fontWeight: 'bold',
-  };
+  // const titleStyle = {
+  //   textAlign: 'center',
+  //   color: '#7d5f4c', 
+  //   marginBottom: '12px',
+  //   fontSize: '24px',
+  //   fontWeight: 'bold',
+  // };
 
-  const cardStyle = {
-    background: '#f3e0d8', // gentle latte-pink
-    padding: '14px 20px',
-    borderRadius: '14px',
-    marginBottom: '10px',
-    fontSize: '18px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    color: '#6b4e4e', // muted cocoa text
-  };
+  // const cardStyle = {
+  //   background: '#f3e0d8', 
+  //   padding: '14px 20px',
+  //   borderRadius: '14px',
+  //   marginBottom: '10px',
+  //   fontSize: '18px',
+  //   display: 'flex',
+  //   justifyContent: 'space-between',
+  //   color: '#6b4e4e', 
+  // };
 
   return (
     <div style={{ 
       padding: '40px',
-      background: '#fffaf0', // soft cream background
+      background: '#fffaf0',
       minHeight: '100vh',
       fontFamily: 'sans-serif',
     }}>
@@ -63,16 +63,16 @@ function DisplayView({ orders }) {
         marginTop: '30px',
       }}>
         <div style={{
-          background: '#fdf6ec', // warm beige card
+          background: '#fdf6ec', 
           padding: '20px',
           borderRadius: '20px',
           width: '360px',
           boxShadow: '0 4px 12px rgba(204, 178, 154, 0.2)',
-          color: '#6b4e4e', // muted cocoa text
+          color: '#6b4e4e',
         }}>
           <h2 style={{
             textAlign: 'center',
-            color: '#a65973', // soft rose header
+            color: '#a65973', 
             marginBottom: '12px',
             fontSize: '24px',
             fontWeight: 'bold',
