@@ -3,7 +3,7 @@ import React from 'react';
 export default function Metrics({ metrics }) {
   return (
     <div className="metrics-container">
-      <h3 className="metrics-header">📈 Daily Metrics Overview</h3>
+      <h3 className="metrics-header">Daily Metrics Overview</h3>
       <div className="metrics-cards">
         <div className="metric-card">Total Orders: <strong>{metrics.totalOrders}</strong></div>
         <div className="metric-card">Making: <strong>{metrics.making}</strong></div>
