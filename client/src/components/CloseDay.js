@@ -10,7 +10,7 @@ function CloseDay({ onCloseDay, metricsSummary }) {
     setFeedback(null);
     try {
       await onCloseDay();
-      setFeedback({ type: 'success', message: "Day closed successfully! 🎉" });
+      setFeedback({ type: 'success', message: "Day closed successfully!" });
     } catch {
       setFeedback({ type: 'error', message: "Oops! Something went wrong." });
     }
