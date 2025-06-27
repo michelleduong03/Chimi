@@ -5,7 +5,7 @@ function Logs({ logsTab, logs, orderHistory }) {
     <div className="logs-container">
       {logsTab === 'logs' && (
         <>
-          <h3 className="logs-header">📊 Saved Metrics Logs</h3>
+          <h3 className="logs-header">Saved Metrics Logs</h3>
           {logs.length === 0 ? (
             <p className="empty-msg">No logs yet.</p>
           ) : (
@@ -28,7 +28,7 @@ function Logs({ logsTab, logs, orderHistory }) {
 
       {logsTab === 'history' && (
         <>
-          <h3 className="logs-header">🎉 Completed Order History</h3>
+          <h3 className="logs-header">Completed Order History</h3>
           {orderHistory.length === 0 ? (
             <p className="empty-msg">No completed orders yet.</p>
           ) : (
